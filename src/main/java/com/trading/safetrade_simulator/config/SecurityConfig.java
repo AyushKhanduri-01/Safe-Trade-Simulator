@@ -21,10 +21,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/user/**").permitAll()
-                                .requestMatchers("/home/**").permitAll()
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
+                        auth
+//                                .requestMatchers("/user/**").permitAll()
+//                                .requestMatchers("/home/**").permitAll()
+//                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
