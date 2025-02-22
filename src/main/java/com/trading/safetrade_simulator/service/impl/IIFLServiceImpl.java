@@ -4,21 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trading.safetrade_simulator.model.Instruments;
+import com.trading.safetrade_simulator.model.QuotesData;
 import com.trading.safetrade_simulator.service.IIFLService;
 import com.trading.safetrade_simulator.service.JsonParserService;
 import com.trading.safetrade_simulator.service.RedisOperationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedTransferQueue;
 
 
@@ -76,6 +75,59 @@ public class IIFLServiceImpl implements IIFLService {
 
     @Override
     public String getSessionToken() {
+        return null;
+    }
+
+    @Override
+    public Map<Integer, QuotesData> getQuoteData(List<Instruments> list) {
+        Object object = redisOperation.findByKey("IIFLSession", String.class);
+        if (object != null) {
+            String token = object.toString();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
+            headers.set("Authorization", token);
+            StringBuilder instrumentsArray = new StringBuilder();
+            for (int i = 0; i < list.size(); i++) {
+                int exchangeInstrumentId = Integer.parseInt(list.get(i).getExchangeInstrumentID());
+                instrumentsArray.append(String.format(
+                        " {\n" +
+                                " \"exchangeSegment\": 2,\n" +
+                                " \"exchangeInstrumentID\": %d\n" +
+                                " }",
+                        exchangeInstrumentId));
+                if (i < list.size() - 1) {
+                    instrumentsArray.append(",\n");
+                }
+            }
+            String requestBody = String.format(
+                    "{\n" +
+                            " \"instruments\": [\n" +
+                            "%s\n" +
+                            " ],\n" +
+                            " \"xtsMessageCode\": 1501,\n" +
+                            " \"publishFormat\": \"JSON\"\n" +
+                            "}",
+                    instrumentsArray.toString());
+
+            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+            try{
+                ResponseEntity<String> response = restTemplate.exchange(quoteUrl,
+                        HttpMethod.POST, entity, String.class);
+                if(response.getStatusCode() == HttpStatus.BAD_REQUEST){
+                    System.out.println("Bad request " + response.getBody());
+                }
+                else{
+                    String responseBody = response.getBody();
+                    Map<Integer, QuotesData> quotesDataList = jsonParserService.getPareseQuoteData(responseBody);
+                    return quotesDataList;
+                }
+            }catch (Exception ex){
+
+                System.out.println("token not match issue in quote data");
+                return null;
+            }
+
+        }
         return null;
     }
 

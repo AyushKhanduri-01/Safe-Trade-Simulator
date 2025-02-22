@@ -22,11 +22,11 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests(auth ->
                         auth
-//                                .requestMatchers("/user/**").permitAll()
-//                                .requestMatchers("/home/**").permitAll()
-//                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//                                .anyRequest().authenticated()
-                                .anyRequest().permitAll()
+                                .requestMatchers("/user/**").permitAll()
+                                .requestMatchers("/home/**").permitAll()
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
                 )
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

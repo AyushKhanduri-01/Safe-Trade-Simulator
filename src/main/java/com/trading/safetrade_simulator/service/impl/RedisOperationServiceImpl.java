@@ -8,6 +8,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class RedisOperationServiceImpl implements RedisOperationService {
@@ -85,6 +88,25 @@ public class RedisOperationServiceImpl implements RedisOperationService {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<Instruments> findByPattern(String pattern) {
+        List<Instruments> instruments = new ArrayList<>();
+        try {
+            Set<String> keys = redisTemplate.keys(pattern + "*");
+            for (String key : keys) {
+                if (key.startsWith(pattern) && !key.equals("IIFLSession") && !key.equals("IsInsturmentPresent")) {
+                    Instruments instrument = (Instruments) redisTemplate.opsForValue().get(key);
+                    instruments.add(instrument);
+                    if (instruments.size() > 30)
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return instruments;
     }
 
 

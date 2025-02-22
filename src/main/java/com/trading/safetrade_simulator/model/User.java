@@ -19,10 +19,12 @@ public class User  {
     @Indexed(unique = true)
     private String email;
     private String password;
-    private double walet = 1000000.00;
+    private double wallet = 1000000.00;
 
 
     private List<String> roles;
+
+    private List<String> wishlist;
 
     public User(String name, String email, String password) {
         this.name = name;

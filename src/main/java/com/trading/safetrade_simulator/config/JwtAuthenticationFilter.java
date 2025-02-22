@@ -1,5 +1,6 @@
 package com.trading.safetrade_simulator.config;
 
+import com.trading.safetrade_simulator.service.CustomUserDetail;
 import com.trading.safetrade_simulator.service.JwtService;
 import com.trading.safetrade_simulator.service.UserService;
 import jakarta.servlet.FilterChain;
@@ -25,19 +26,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+        System.out.println("1 " );
         if(authHeader != null && authHeader.startsWith("Bearer")){
+
             String token = authHeader.substring(7);
+            System.out.println("Token : " + token);
 
             if(jwtService.validateToken(token)){
                String userNameFromToken = jwtService.getUsernameFromToken(token);
+               System.out.println("userName   " + userNameFromToken );
+//                old
                 UserDetails userDetails = userService.loadUserByUsername(userNameFromToken);
+
+
+//                new
+//                CustomUserDetail userDetails = (CustomUserDetail) userService.loadUserByUsername(userNameFromToken);
 
                 if(SecurityContextHolder.getContext().getAuthentication()==null){
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
+            else {
+                System.out.println("not validate " );
+            }
+            System.out.println("end");
 
+        }
+        else{
+            System.out.println("end authheader");
         }
         filterChain.doFilter(request,response);
     }

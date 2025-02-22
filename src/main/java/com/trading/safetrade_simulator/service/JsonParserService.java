@@ -1,10 +1,17 @@
 package com.trading.safetrade_simulator.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trading.safetrade_simulator.model.Instruments;
+import com.trading.safetrade_simulator.model.QuotesData;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,5 +67,32 @@ public class JsonParserService {
             }
 
             return instrument;
+    }
+
+    public Map<Integer, QuotesData> getPareseQuoteData(String responseBody) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<Integer, QuotesData> quotesDataList = new HashMap<>();
+        try {
+            JsonNode rootNode = objectMapper.readTree(responseBody);
+            JsonNode resultNode = rootNode.path("result");
+            JsonNode listQuotesNode = resultNode.path("listQuotes");
+
+            if (listQuotesNode.isArray()) {
+                for (JsonNode node : listQuotesNode) {
+                    String jsonString = node.asText();
+                    QuotesData quotesData = objectMapper.readValue(jsonString, QuotesData.class);
+                    int exchangeInstrumentId = quotesData.getExchangeInstrumentID();
+                    quotesDataList.put(exchangeInstrumentId, quotesData);
+                }
+            } else {
+                QuotesData quotesData = objectMapper.readValue(listQuotesNode.toString(), QuotesData.class);
+                int exchangeInstrumentId = quotesData.getExchangeInstrumentID();
+                quotesDataList.put(exchangeInstrumentId, quotesData);
+            }
+            return quotesDataList;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return quotesDataList;
     }
 }
