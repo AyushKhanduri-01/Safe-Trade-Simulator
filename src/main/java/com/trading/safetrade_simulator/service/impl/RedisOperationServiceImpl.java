@@ -37,9 +37,9 @@ public class RedisOperationServiceImpl implements RedisOperationService {
             if (type == String.class && value instanceof String) {
                 return type.cast(value);
             }
-//            else if (type == Instrument.class && value instanceof Instrument) {
-//                return type.cast(value);
-//            }
+            else if (type == Instruments.class && value instanceof Instruments) {
+                return type.cast(value);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -41,12 +41,17 @@ public class MarketDataSearch {
     public ResponseEntity<List<Instruments>> getSearchInstrument(@RequestParam String query){
       query = query.toUpperCase();
       List<Instruments> list = redisOperationService.findByPattern(query);
+
+      System.out.println(list.size());
       Map<Integer, QuotesData> map = iiflService.getQuoteData(list);
-      if(map == null){
+      System.out.println("map size  " + map.size());
+      if(map == null || map.isEmpty()){
           // Display only Instrument name with disable buy and sell and without ltp when instrument.quoteData == null
           return ResponseEntity.status(HttpStatus.OK).body(list);
       }
+
       list = helper.mapData(list,map);
+        System.out.println("again " + list.size());
       if(list.isEmpty()){
           return ResponseEntity.status(HttpStatus.NO_CONTENT).body(list);
       }
@@ -88,17 +93,29 @@ public class MarketDataSearch {
     @GetMapping("/wishlist")
     public ResponseEntity<List<Instruments>> getWishlist(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication!= null){
-           try{
-               return wishlistService.getWishlist(authentication);
-           }catch (Exception ex){
-               return new ResponseEntity<>(new ArrayList<>(),HttpStatus.BAD_REQUEST);
-           }
+        if (authentication == null) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
+        }
+        try {
+            List<Instruments> list = wishlistService.getWishlist(authentication);
+            if (list == null || list.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ArrayList<>());
+            }
+            Map<Integer, QuotesData> map = iiflService.getQuoteData(list);
+            if (map == null || map.isEmpty()) {
+                return ResponseEntity.ok(list);
+            }
+           list = helper.mapData(list, map);
+            if (list.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body(list);
+            }
+            return ResponseEntity.ok(list);
 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else {
-            return new ResponseEntity<>(new ArrayList<>(),HttpStatus.UNAUTHORIZED);
-        }
+
     }
 
 }
