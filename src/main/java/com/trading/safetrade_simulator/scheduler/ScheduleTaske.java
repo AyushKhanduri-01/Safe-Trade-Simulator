@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class ScheduleTaske {
     @Autowired
     private IIFLService iiflService;
-    @Scheduled(cron = "0 12 0 * * ?", zone = "Asia/Kolkata")
+    @Scheduled(cron = "0 1 0 * * ?", zone = "Asia/Kolkata")
     public void updateDaily() throws JsonProcessingException {
         if (!iiflService.isSessionTokenPresent()) {
             System.out.println("session not present");
