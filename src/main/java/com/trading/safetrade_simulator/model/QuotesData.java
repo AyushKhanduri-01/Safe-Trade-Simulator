@@ -16,7 +16,6 @@ public class QuotesData {
 
     @JsonProperty("LastTradedPrice")
     private double lastTradedPrice;
-
     @JsonProperty("LastTradedQunatity")
     private int lastTradedQuantity;
 

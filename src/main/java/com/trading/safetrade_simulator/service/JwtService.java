@@ -12,7 +12,7 @@ import java.util.Date;
 @Service
 public class JwtService {
     private static  final String SECRET_KEY ="kaklfjaskldjfaskfifjfjkafjakfryufcaxikjgamfxpjghaklfjfghjklertyuiocvbnmajskfklfj";
-    private static final long ACCESS_TOKEN_EXPIRATION =  15*60*1000; //15 min
+    private static final long ACCESS_TOKEN_EXPIRATION =  60*60*1000; //15 min
     private static final long REFRESH_TOKEN_EXPIRATION = 48*60*1000;
 
     //for generating token

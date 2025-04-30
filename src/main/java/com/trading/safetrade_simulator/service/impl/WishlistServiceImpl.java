@@ -75,9 +75,11 @@ public class WishlistServiceImpl implements WishlistService {
         User user = userRepository.findByEmail(username).get();
         if(user != null && user.getWishlist() != null && !user.getWishlist().isEmpty()){
             List<String> instrumentList = user.getWishlist();
+            System.out.println("Instrument List     " + instrumentList);
             List<Instruments> list = new ArrayList<>();
             for(String str : instrumentList){
                 Instruments isnt = redisOperationService.findByKey(str,Instruments.class);
+                System.out.println(str + "  : " + isnt);
                 if(isnt != null){
                     list.add(isnt);
                 }

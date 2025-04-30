@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,10 +45,13 @@ public class OrderServiceImpl implements OrderService {
             String username = userDetail.getUsername();
             User user = userRepository.findByEmail(username).get();
             System.out.println("2 : " + user.getEmail());
+            orderForm.setProductType(orderForm.getProductType().toUpperCase());
+            System.out.println("order for " + orderForm);
 
             //Create new Order
                 double amount = user.getWallet();
                 OrderDetails order = new OrderDetails();
+                order.setUser(user);
                 order.setInstrumentDescription(orderForm.getDescription());
                 order.setQuantity(orderForm.getQuantity() * orderForm.getLotSize());
                 order.setPrice(orderForm.getPrice());
@@ -106,6 +110,8 @@ public class OrderServiceImpl implements OrderService {
         }
         return true;
     }
+
+
 
     //For Buy Orders only
     public void saveToPositions(OrderDetails orderDetails, User user) {
@@ -175,4 +181,21 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public List<OrderDetails> getAllOrders() {
+        List<OrderDetails> orders = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication != null){
+            CustomUserDetail userDetail = (CustomUserDetail) authentication.getPrincipal();
+            String username = userDetail.getUsername();
+            User user = userRepository.findByEmail(username).get();
+
+            orders = orderRepository.findByUser(user);
+        }
+        for(OrderDetails orderDetails : orders){
+            orderDetails.setUser(null);
+        }
+        return orders;
+
+    }
 }

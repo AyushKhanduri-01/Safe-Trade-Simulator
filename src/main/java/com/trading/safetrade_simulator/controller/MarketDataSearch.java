@@ -55,6 +55,7 @@ public class MarketDataSearch {
       if(list.isEmpty()){
           return ResponseEntity.status(HttpStatus.NO_CONTENT).body(list);
       }
+
        return ResponseEntity.ok(list);
     }
 
@@ -99,6 +100,7 @@ public class MarketDataSearch {
         try {
             List<Instruments> list = wishlistService.getWishlist(authentication);
             if (list == null || list.isEmpty()) {
+
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).body(new ArrayList<>());
             }
             Map<Integer, QuotesData> map = iiflService.getQuoteData(list);
