@@ -10,6 +10,8 @@ import java.util.List;
 public interface PositionRepository extends MongoRepository<PositionOrders, String> {
     List<PositionOrders> findByUserAndInstrumentDescription(User user, String instrumentDascription);
 
+    List<PositionOrders> findByUser(User user);
+
     int countByUser(User user);
 
     int countByUserAndCreatedAtBetween(User user, LocalDateTime start, LocalDateTime end);

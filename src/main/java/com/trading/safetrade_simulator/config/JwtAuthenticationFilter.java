@@ -29,11 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(authHeader != null && authHeader.startsWith("Bearer")){
 
             String token = authHeader.substring(7);
-            System.out.println("Token : " + token);
+//            System.out.println("Token : " + token);
 
             if(jwtService.validateToken(token)){
                String userNameFromToken = jwtService.getUsernameFromToken(token);
-               System.out.println("userName   " + userNameFromToken );
+               System.out.println("userName :" + userNameFromToken );
 //                old
                 UserDetails userDetails = userService.loadUserByUsername(userNameFromToken);
 
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             else {
                 System.out.println("not validate " );
             }
-            System.out.println("end");
+//            System.out.println("end");
 
         }
         else{
