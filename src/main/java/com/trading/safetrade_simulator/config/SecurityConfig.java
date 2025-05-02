@@ -1,6 +1,7 @@
 package com.trading.safetrade_simulator.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,22 +27,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf().disable()
-//                .authorizeHttpRequests(auth ->
-//                        auth
-//                                .requestMatchers("/user/**").permitAll()
-//                                .requestMatchers("/home/**").permitAll()
-//                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//                                .anyRequest().authenticated()
-////                                .anyRequest().permitAll()
-//                )
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//       return http.build();
-//    }
+
+    @Value("${frontend.Origin}")
+    private String frontendOrigin;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -66,7 +54,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // 👈 your frontend origin
+//        config.setAllowedOrigins(List.of("http://localhost:5173")); // 👈 your frontend origin
+        config.setAllowedOrigins(List.of(frontendOrigin));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true); // if you're using cookies or Authorization headers

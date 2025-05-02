@@ -9,4 +9,8 @@ public interface OrderService {
     boolean saveOrder(BuyOrderForm orderForm);
 
     List<OrderDetails> getAllOrders();
+
+    void executeLimitOrder();
+
+    void cancelPendingOrder();
 }

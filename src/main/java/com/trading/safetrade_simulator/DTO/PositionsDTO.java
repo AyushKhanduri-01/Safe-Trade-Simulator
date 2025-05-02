@@ -16,4 +16,6 @@ public class PositionsDTO {
     private String type;
     private double stopLoss;
     private double targetPrice;
+
+    private double exitPrice;
 }

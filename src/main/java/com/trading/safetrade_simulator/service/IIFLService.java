@@ -15,4 +15,6 @@ public interface IIFLService {
     public String getSessionToken();
 
     Map<Integer, QuotesData> getQuoteData(List<Instruments> list);
+
+    public Double getSingleQuoteData(String instrumentDescription);
 }

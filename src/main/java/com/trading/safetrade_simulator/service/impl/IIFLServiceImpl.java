@@ -150,4 +150,38 @@ public class IIFLServiceImpl implements IIFLService {
         }
         System.out.println(i+" no. of instrumetns added");
     }
+
+    @Override
+    public Double getSingleQuoteData(String instrumentDescription) {
+
+        Instruments instrument = redisOperation.findByKey(instrumentDescription, Instruments.class);
+        Object object = redisOperation.findByKey("IIFLSession", String.class);
+        String token = object.toString();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        headers.set("Authorization", token);
+
+        int exchangeInstrumentId = Integer.parseInt(instrument.getExchangeInstrumentID());
+        String requestBody = String.format(
+                "{\n" +
+                        " \"instruments\": [\n" +
+                        "   {\n" +
+                        "     \"exchangeSegment\": 2,\n" +
+                        "     \"exchangeInstrumentID\": %d\n" +
+                        "   }\n" +
+                        " ],\n" +
+                        " \"xtsMessageCode\": 1501,\n" +
+                        " \"publishFormat\": \"JSON\"\n" +
+                        "}",
+                exchangeInstrumentId);
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(quoteUrl,
+                HttpMethod.POST, entity, String.class);
+        String responseBody = response.getBody();
+
+        QuotesData quotesData = jsonParserService.getPareseQuoteData(responseBody).get(exchangeInstrumentId);
+
+        return quotesData != null ? quotesData.getLastTradedPrice() : null;
+    }
 }

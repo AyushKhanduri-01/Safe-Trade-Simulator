@@ -9,6 +9,7 @@ import com.trading.safetrade_simulator.model.OrderDetails;
 import com.trading.safetrade_simulator.model.PositionOrders;
 import com.trading.safetrade_simulator.model.User;
 import com.trading.safetrade_simulator.service.CustomUserDetail;
+import com.trading.safetrade_simulator.service.IIFLService;
 import com.trading.safetrade_simulator.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -30,6 +31,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private IIFLService iiflService;
 
 
     //Only for BuyOrders
@@ -126,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         //If this is existing one
-        if (position != null && position.getQuantity() != 0) {
+        if (position != null && position.getQuantity() != 0 && position.getExitPrice()<=0) {
             //If both Buy orders.
             if (orderDetails.getOrderType().equals(position.getOrderType())) {
                 position.setQuantity(position.getQuantity() + orderDetails.getQuantity());
@@ -197,5 +201,48 @@ public class OrderServiceImpl implements OrderService {
         }
         return orders;
 
+    }
+
+    @Override
+    public void executeLimitOrder() {
+      List<OrderDetails> ordersList = orderRepository.findByOrderStatus(OrderStatus.PENDING);
+
+      System.out.println("OrderList Pending : " + ordersList.size());
+
+        for (OrderDetails order : ordersList) {
+            String insturmentDescription = order.getInstrumentDescription();
+
+            try {
+                double ltp = iiflService.getSingleQuoteData(insturmentDescription);
+                if (order.getLimitPrice() >= ltp && order.getLimitPrice() != 0) {
+                    User user = order.getUser();
+                    double amount = order.getQuantity() * ltp;
+                    if (amount <= user.getWallet()) {
+                        user.setWallet(user.getWallet() - amount);
+                        order.setUpdatedAt(LocalDateTime.now());
+                        order.setPrice(ltp);
+                        order.setTotalAmount(ltp * order.getQuantity());
+                        order.setOrderStatus(OrderStatus.PLACED);
+                        saveToPositions(order, user);
+                        orderRepository.save(order);
+                        userRepository.save(user);
+                    } else {
+                        order.setOrderStatus(OrderStatus.REJECTED);
+                    }
+                }
+            }catch (Exception ex){
+                System.out.println("Error in ExecuteLimitOrder " + ex.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void cancelPendingOrder() {
+        List<OrderDetails> orders = orderRepository.findByOrderStatus(OrderStatus.PENDING);
+        System.out.println("Inside cancel pending order : " + orders.size());
+        for(OrderDetails order : orders){
+            order.setOrderStatus(OrderStatus.CANCELED);
+            orderRepository.save(order);
+        }
     }
 }
