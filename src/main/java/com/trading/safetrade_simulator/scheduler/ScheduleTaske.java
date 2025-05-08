@@ -39,19 +39,19 @@ public class ScheduleTaske {
     public void squareOFFPosition(){
       positionsService.executeSquareOff();
     }
-    @Scheduled(cron = "0 52 18 * * MON-FRI", zone = "Asia/Kolkata")
+    @Scheduled(cron = "0 30 15 * * MON-FRI", zone = "Asia/Kolkata")
     public void cancelPendigOrder(){
         orderService.cancelPendingOrder();
     }
 
-    @Scheduled(fixedRate = 3000)
-    public void executeLimitOrder(){
-        orderService.executeLimitOrder();
-    }
+//    @Scheduled(fixedRate = 3000)
+//    public void executeLimitOrder(){
+//        orderService.executeLimitOrder();
+//    }
 
-    @Scheduled(fixedRate = 3000)
-    public void executestopLossandTarget(){
-        positionsService.executeStopLandTarget();
-    }
+//    @Scheduled(fixedRate = 3000)
+//    public void executestopLossandTarget(){
+//        positionsService.executeStopLandTarget();
+//    }
 
 }

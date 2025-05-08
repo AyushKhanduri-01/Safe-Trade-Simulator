@@ -22,8 +22,10 @@ public class OrderController {
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllOrders(){
+        System.out.println("get order Request");
         List<OrderDetails> orders = orderService.getAllOrders();
         Collections.reverse(orders);
+        System.out.println("response : " + orders);
         return  new ResponseEntity<>(orders,HttpStatus.OK);
     }
 
