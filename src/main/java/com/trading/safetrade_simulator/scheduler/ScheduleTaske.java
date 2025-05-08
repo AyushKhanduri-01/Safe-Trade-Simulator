@@ -44,14 +44,14 @@ public class ScheduleTaske {
         orderService.cancelPendingOrder();
     }
 
-//    @Scheduled(fixedRate = 3000)
-//    public void executeLimitOrder(){
-//        orderService.executeLimitOrder();
-//    }
+    @Scheduled(fixedRate = 3000)
+    public void executeLimitOrder(){
+        orderService.executeLimitOrder();
+    }
 
-//    @Scheduled(fixedRate = 3000)
-//    public void executestopLossandTarget(){
-//        positionsService.executeStopLandTarget();
-//    }
+    @Scheduled(fixedRate = 3000)
+    public void executestopLossandTarget(){
+        positionsService.executeStopLandTarget();
+    }
 
 }
