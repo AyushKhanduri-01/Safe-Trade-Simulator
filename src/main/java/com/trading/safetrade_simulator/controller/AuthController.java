@@ -46,7 +46,6 @@ public class AuthController {
         String accessToken = jwtService.generateToken(loginData.getEmail(), true);
         String refreshToken = jwtService.generateToken(loginData.getEmail(),false);
         User user = userRepository.findByEmail(loginData.getEmail()).get();
-
         //Removing user details after login
 //        JwtResponse jwtResponse = new JwtResponse(accessToken,refreshToken,user);
 
