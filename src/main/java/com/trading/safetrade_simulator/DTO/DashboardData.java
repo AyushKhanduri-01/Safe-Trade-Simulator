@@ -15,4 +15,5 @@ public class DashboardData {
     private int totalPositions;
     private int todayOrders;
     private int todayPosition;
+    private int activePosition;
 }

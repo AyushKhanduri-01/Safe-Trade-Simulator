@@ -34,6 +34,7 @@ public class Dashboard {
           }
 
           if (!iiflService.isInstrumentPresent()) {
+              System.out.println("Instrument not present");
               iiflService.addInstruments();
           }
 

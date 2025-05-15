@@ -45,7 +45,12 @@ public class DashboardServiceImpl implements DashboardService {
            dashboardData.setTodayOrders(orderRepository.countByUserAndCreatedAtBetween(user,startOfDay,endOfDay));
            dashboardData.setTotalPositions(positionRepository.countByUser(user));
            dashboardData.setTodayPosition(positionRepository.countByUserAndCreatedAtBetween(user,startOfDay,endOfDay));
+           dashboardData.setActivePosition(positionRepository.countByUserAndExitPrice(user,0.0));
+
+
        }
+       System.out.println("Dashboard data : "+ dashboardData);
+
        return dashboardData;
     }
 }

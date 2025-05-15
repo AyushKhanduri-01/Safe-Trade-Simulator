@@ -20,6 +20,9 @@ public interface PositionRepository extends MongoRepository<PositionOrders, Stri
 
     int countByUserAndCreatedAtBetween(User user, LocalDateTime start, LocalDateTime end);
 
+    int countByUserAndExitPrice(User user, double exitPrice);
+
+
     @Query("{ 'exitPrice': 0, $or: [ { 'stopLoss': { $gte: 0 } }, { 'target': { $gte: 0 } } ] }")
     List<PositionOrders> findByExitPriceZeroAndStopLossOrTargetSet();
 
